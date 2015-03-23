@@ -35,3 +35,30 @@ termcap manpage on most Unix-like systems.
 
 =end pod
 
+use Term::Cap::X;
+
+has Int $.ospeed;
+has Str $.term;
+has Num $.padding;
+
+submethod BUILD(Int :$!ospeed = 9600, Str :$!term) {
+   if ( %*ENV<TERM>.defined ) {
+      $!term = %*ENV<TERM>;
+   }
+   elsif (!$!term.defined ) {
+      Term::Cap::X::NoTerminal.new.throw;
+   }
+   $!padding = calculate_padding($!ospeed);
+}
+
+multi sub calculate_padding(Int $ospeed where { $ospeed < 16 }) returns Num {
+   my @pad = ( 0, 200, 133.3, 90.9, 74.3, 66.7, 50, 33.3,
+               16.7, 8.3, 5.5, 4.1, 2, 1, .5, .2);
+   return @pad[$ospeed];
+
+}
+
+multi sub calculate_padding(Int $ospeed) returns Num {
+   return (10000 / $ospeed).Num;
+}
+
