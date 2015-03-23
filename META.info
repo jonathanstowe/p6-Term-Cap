@@ -1,0 +1,12 @@
+{
+    "name" : "Term::Cap",
+    "version" : "0.0.1",
+    "author" : "github:jonathanstowe",
+    "description" : "Interface to the terminal capability database for Perl 6.",
+    "depends" : [],
+    "provides" : {
+        "Term::Cap" : "lib/Term/Cap.pm6"
+    },
+    "source-url" : "https://github.com/jonathanstowe/p6-Term-Cap.git"
+}
+
