@@ -8,9 +8,9 @@ use Term::Cap;
 
 my $obj;
 
-lives_ok { $obj = Term::Cap.new() }, "Create a new Term::Cap";
+lives-ok { $obj = Term::Cap.new() }, "Create a new Term::Cap";
 
-isa_ok($obj, Term::Cap, "and its the right type of object");
+isa-ok($obj, Term::Cap, "and its the right type of object");
 
 %*ENV<TERM> = 'vt220' unless %*ENV<TERM>.defined;
 
@@ -21,4 +21,6 @@ my $old_term = %*ENV<TERM>;
 
 %*ENV<TERM>:delete;
 
-throws_like { Term::Cap.new() }, Term::Cap::X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
+throws-like { Term::Cap.new() }, Term::Cap::X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
+
+done;
