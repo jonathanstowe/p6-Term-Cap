@@ -1,4 +1,4 @@
-class Term::Cap;
+use v6;
 
 =begin pod
 
@@ -35,30 +35,32 @@ termcap manpage on most Unix-like systems.
 
 =end pod
 
-use Term::Cap::X;
+class Term::Cap {
 
-has Int $.ospeed;
-has Str $.term;
-has Num $.padding;
+    use Term::Cap::X;
 
-submethod BUILD(Int :$!ospeed = 9600, Str :$!term) {
-   if ( %*ENV<TERM>.defined ) {
-      $!term = %*ENV<TERM>;
-   }
-   elsif (!$!term.defined ) {
-      Term::Cap::X::NoTerminal.new.throw;
-   }
-   $!padding = calculate_padding($!ospeed);
-}
+    has Int $.ospeed;
+    has Str $.term;
+    has Num $.padding;
 
-multi sub calculate_padding(Int $ospeed where { $ospeed < 16 }) returns Num {
-   my @pad = ( 0, 200, 133.3, 90.9, 74.3, 66.7, 50, 33.3,
+    submethod BUILD(Int :$!ospeed = 9600, Str :$!term) {
+        if  %*ENV<TERM>.defined  {
+            $!term = %*ENV<TERM>;
+        }
+        elsif !$!term.defined  {
+            Term::Cap::X::NoTerminal.new.throw;
+        }
+        $!padding = calculate_padding($!ospeed);
+    }
+
+    multi sub calculate_padding(Int $ospeed where { $ospeed < 16 }) returns Num {
+        my @pad = ( 0, 200, 133.3, 90.9, 74.3, 66.7, 50, 33.3,
                16.7, 8.3, 5.5, 4.1, 2, 1, .5, .2);
-   return @pad[$ospeed];
+        return @pad[$ospeed];
+    }
 
+    multi sub calculate_padding(Int $ospeed) returns Num {
+        return (10000 / $ospeed).Num;
+    }
 }
-
-multi sub calculate_padding(Int $ospeed) returns Num {
-   return (10000 / $ospeed).Num;
-}
-
+# vim: expandtab shiftwidth=4 ft=perl6
