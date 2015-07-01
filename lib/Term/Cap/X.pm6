@@ -6,3 +6,4 @@ module Term::Cap::X {
         method message() { "no terminal type provided "; }
     }
 }
+# vim: expandtab shiftwidth=4 ft=perl6
