@@ -37,7 +37,9 @@ termcap manpage on most Unix-like systems.
 
 class Term::Cap {
 
-    use Term::Cap::X;
+    class X::NoTerminal is Exception {
+        method message() { "no terminal type provided "; }
+    }
 
     has Int $.ospeed;
     has Str $.term;
@@ -48,7 +50,7 @@ class Term::Cap {
             $!term = %*ENV<TERM>;
         }
         elsif !$!term.defined  {
-            Term::Cap::X::NoTerminal.new.throw;
+            X::NoTerminal.new.throw;
         }
         $!padding = calculate_padding($!ospeed);
     }

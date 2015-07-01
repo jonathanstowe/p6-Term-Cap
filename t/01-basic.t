@@ -21,6 +21,6 @@ my $old_term = %*ENV<TERM>;
 
 %*ENV<TERM>:delete;
 
-throws-like { Term::Cap.new() }, Term::Cap::X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
+throws-like { Term::Cap.new() }, X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
 
 done;
