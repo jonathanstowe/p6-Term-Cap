@@ -1,5 +1,8 @@
-module Term::Cap::X;
+use v6;
 
-class Term::Cap::X::NoTerminal is Exception {
-   sub message() { "no terminal type provided "; }
+module Term::Cap::X {
+
+    class NoTerminal is Exception {
+        method message() { "no terminal type provided "; }
+    }
 }
