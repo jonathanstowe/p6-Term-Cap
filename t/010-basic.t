@@ -24,3 +24,4 @@ my $old_term = %*ENV<TERM>;
 throws-like { Term::Cap.new() }, X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
 
 done;
+# vim: expandtab shiftwidth=4 ft=perl6
