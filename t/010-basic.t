@@ -1,7 +1,5 @@
 use v6;
 
-use lib 'lib';
-
 use Test;
 
 use Term::Cap;
@@ -23,5 +21,5 @@ my $old_term = %*ENV<TERM>;
 
 throws-like { Term::Cap.new() }, X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
 
-done;
+done-testing;
 # vim: expandtab shiftwidth=4 ft=perl6
