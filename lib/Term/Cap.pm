@@ -45,6 +45,8 @@ class Term::Cap {
     has Str $.term;
     has Num $.padding;
 
+    has Str $.termcap;
+
     submethod BUILD(Int :$!ospeed = 9600, Str :$!term) {
         if  %*ENV<TERM>.defined  {
             $!term = %*ENV<TERM>;
@@ -63,6 +65,25 @@ class Term::Cap {
 
     multi sub calculate-padding(Int $ospeed) returns Num {
         return (10000 / $ospeed).Num;
+    }
+
+    method termcap() returns Str {
+        $!termcap //= do {
+            if %*ENV<TERMCAP> -> $tc {
+                $tc;
+            }
+            else {
+                my $tc;
+            }
+        };
+    }
+
+    method termpath() {
+        my @termpath;
+        if %*ENV<TERMPATH> -> $tp {
+            @termpath.append: $tp.split(':');
+        }
+        @termpath.append: </etc /usr/share/misc /usr/share>;
     }
 
     grammar Grammar {
