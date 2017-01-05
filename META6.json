@@ -1,15 +1,17 @@
 {
-	 "perl" : "6",
+	"perl" : "6.c",
     "name" : "Term::Cap",
     "version" : "0.0.1",
-    "author" : "github:jonathanstowe",
+    "auth" : "github:jonathanstowe",
+    "authors" : [ "Jonathan Stowe <jns@gellyfish.co.uk>" ],
     "description" : "Interface to the terminal capability database for Perl 6.",
     "depends" : [],
+    "resources" : [ "etc/termcap" ],
     "provides" : {
         "Term::Cap" : "lib/Term/Cap.pm"
     },
-	 "support" : {
-    	"source" : "https://github.com/jonathanstowe/p6-Term-Cap.git"
-	 },
+	"support" : {
+        "source" : "https://github.com/jonathanstowe/p6-Term-Cap.git"
+	},
     "source-url" : "https://github.com/jonathanstowe/p6-Term-Cap.git"
 }
