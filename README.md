@@ -9,30 +9,25 @@ It provides access to the terminal capabilities database for Unix like systems,
 providing a usable set of defaults for platforms where there is no termcap or
 terminfo available.
 
+You may be better off using a higher level abstraction such as curses.
 
 ## Installation
 
-Assuming you have a working perl6 installation you should be able to
-install this with *ufo* :
+Assuming you have a working Rakudo Perl 6 installation you should be able to
+install this with *panda* :
 
-    ufo 
-    make test 
-    make install
+    panda install Term::Cap
 
-*ufo* can be installed with *panda* for rakudo:
+or *zef*:
 
-    panda install ufo
-
-Other install mechanisms may be become available in the future.
-
+    zef install Term::Cap
 
 ## Support
 
-This should be considered experimental software until such time that
-Perl 6 reaches an official release.  However suggestions/patches are
-welcomed via github at
+Suggestions/patches are
+welcomed via github at:
 
-   https://github.com/jonathanstowe/p6-Term-Cap
+https://github.com/jonathanstowe/p6-Term-Cap/issues
 
 I'm not able to test on a wide variety of platforms so any help there
 would be appreciated.
@@ -41,4 +36,4 @@ would be appreciated.
 
 Please see the LICENCE file in the distribution directory
 
-(C) Jonathan Stowe 2015
+© Jonathan Stowe 2015-2017
