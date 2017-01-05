@@ -37,6 +37,8 @@ termcap manpage on most Unix-like systems.
 
 class Term::Cap {
 
+    use Grammar::Tracer;
+
     class X::NoTerminal is Exception {
         method message() { "no terminal type provided "; }
     }
@@ -73,7 +75,7 @@ class Term::Cap {
                 $tc;
             }
             else {
-                my $tc;
+                self.termcap-files.first.slurp;
             }
         };
     }
@@ -83,10 +85,18 @@ class Term::Cap {
         if %*ENV<TERMPATH> -> $tp {
             @termpath.append: $tp.split(':');
         }
-        @termpath.append: </etc /usr/share/misc /usr/share>;
+        @termpath.append: </etc /usr/share/misc>;
     }
 
-    grammar Grammar {
+    method termcap-files() {
+        my @files = ($*HOME.child('.termcap'), |self.termpath.map({ $_.IO.child('termcap') }), %?RESOURCES<etc/termcap> ).grep({ $_.f});
+        @files;
+    }
+
+
+
+
+    grammar Parser {
         rule comment          { ^^\# }
         rule blank            { ^^\s*$$ }
         rule comment-or-blank { <comment>|<blank> }
@@ -126,7 +136,8 @@ class Term::Cap {
         token false-bool      { <name=cap>\@ }
         token num-cap         { <name=cap>\#<value=num-val> }
         token str-cap         { <name=cap>\=<value=str-val> }
-        token capability      { ^<capability=true-bool>|<capability=false-bool>|<capability=num-cap>|<capability=str-cap>$ }
+        token tc-cap          { tc\=<term=str-val> }
+        token capability      { ^<capability=true-bool>|<capability=false-bool>|<capability=num-cap>|<capability=str-cap>|<tc-cap>$ }
         token name            { <-[\|\:]>+ }
         token names           { <name>+ % '|' }
         regex record          { ^^ <names> ':' [ <capability> | <continuation> | <empty-cap> ]+ %% ':' }
@@ -200,6 +211,11 @@ class Term::Cap {
         method TOP($/) {
             $/.make: $<capability>.made;
         }
+
+    }
+
+    method description() {
+        Parser.parse(self.termcap);
     }
 
 }
