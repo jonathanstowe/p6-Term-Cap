@@ -15,11 +15,12 @@ isa-ok($obj, Term::Cap, "and its the right type of object");
 is($obj.ospeed, 9600, "got correct default ospeed");
 is($obj.term, %*ENV<TERM>, "got a default term from the environmen");
 
-my $old_term = %*ENV<TERM>;
+{
+    temp %*ENV;
+    %*ENV<TERM>:delete;
 
-%*ENV<TERM>:delete;
-
-throws-like { Term::Cap.new() }, X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
+    throws-like { Term::Cap.new() }, X::NoTerminal, "Creatng a new Term::Cap with no TERM in environment";
+}
 
 done-testing;
 # vim: expandtab shiftwidth=4 ft=perl6
