@@ -15,6 +15,10 @@ isa-ok($obj, Term::Cap, "and its the right type of object");
 is($obj.ospeed, 9600, "got correct default ospeed");
 is($obj.term, %*ENV<TERM>, "got a default term from the environmen");
 
+ok $obj.termcap, "got the termcap";
+
+diag $obj.description.perl;
+
 {
     temp %*ENV;
     %*ENV<TERM>:delete;
