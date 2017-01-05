@@ -52,44 +52,44 @@ class Term::Cap {
         elsif !$!term.defined  {
             X::NoTerminal.new.throw;
         }
-        $!padding = calculate_padding($!ospeed);
+        $!padding = calculate-padding($!ospeed);
     }
 
-    multi sub calculate_padding(Int $ospeed where { $ospeed < 16 }) returns Num {
+    multi sub calculate-padding(Int $ospeed where { $ospeed < 16 }) returns Num {
         my @pad = ( 0, 200, 133.3, 90.9, 74.3, 66.7, 50, 33.3,
                16.7, 8.3, 5.5, 4.1, 2, 1, .5, .2);
         return @pad[$ospeed];
     }
 
-    multi sub calculate_padding(Int $ospeed) returns Num {
+    multi sub calculate-padding(Int $ospeed) returns Num {
         return (10000 / $ospeed).Num;
     }
 
     grammar Grammar {
         rule comment          { ^^\# }
         rule blank            { ^^\s*$$ }
-        rule comment_or_blank { <comment>|<blank> }
+        rule comment-or-blank { <comment>|<blank> }
         rule continuation     { \\\s*$$ }
-        rule empty_cap        { \s*\\\s* }
+        rule empty-cap        { \s*\\\s* }
         token cap             { \w\w }
-        token num_val         { \d+ }
+        token num-val         { \d+ }
         token esc             { \\E }
         token od              { <[0 .. 7]> }
-        token oct_val         { <od><od><od> }
-        token oct_chr         { \\<oct_val> }
+        token oct-val         { <od><od><od> }
+        token oct-chr         { \\<oct-val> }
         token nl              { \\n }
         token ret             { \\r }
         token tab             { \\t }
         token ff              { \\f }
         token caret           { \\\^ }
-        token ctrl_char       { <:Lu> }
-        token ctrl            { \^<ctrl_char> }
+        token ctrl-char       { <:Lu> }
+        token ctrl            { \^<ctrl-char> }
         token del             { \^\? }
         token char            { . }
-        token esc_char        { \\<char> }
-        regex special         {  
-                                <value=esc>      || 
-                                <value=oct_chr>  ||
+        token esc-char        { \\<char> }
+        regex special         {
+                                <value=esc>      ||
+                                <value=oct-chr>  ||
                                 <value=nl>       ||
                                 <value=ret>      ||
                                 <value=tab>      ||
@@ -97,35 +97,35 @@ class Term::Cap {
                                 <value=caret>    ||
                                 <value=ctrl>     ||
                                 <value=del>      ||
-                                <value=esc_char> 
+                                <value=esc-char>
                               }
         token literal         { . }
-        token str_val         { [ <value=special> || <value=literal> ]+ }
-        token true_bool       { <name=cap> }
-        token false_bool      { <name=cap>\@ }
-        token num_cap         { <name=cap>\#<value=num_val> }
-        token str_cap         { <name=cap>\=<value=str_val> }
-        token capability      { ^<capability=true_bool>|<capability=false_bool>|<capability=num_cap>|<capability=str_cap>$ }
+        token str-val         { [ <value=special> || <value=literal> ]+ }
+        token true-bool       { <name=cap> }
+        token false-bool      { <name=cap>\@ }
+        token num-cap         { <name=cap>\#<value=num-val> }
+        token str-cap         { <name=cap>\=<value=str-val> }
+        token capability      { ^<capability=true-bool>|<capability=false-bool>|<capability=num-cap>|<capability=str-cap>$ }
         token name            { <-[\|\:]>+ }
         token names           { <name>+ % '|' }
-        regex record          { ^^ <names> ':' [ <capability> | <continuation> | <empty_cap> ]+ %% ':' }
-        token TOP             { [ <comment_or_blank> || <record> ] + }
+        regex record          { ^^ <names> ':' [ <capability> | <continuation> | <empty-cap> ]+ %% ':' }
+        token TOP             { [ <comment-or-blank> || <record> ] + }
     }
 
     class Actions  {
         method cap($/) {
             $/.make: ~$/;
         }
-        method num_val($/) {
+        method num-val($/) {
             $/.make: ~$/.Int +0;
         }
         method esc($/) {
             $/.make("\o[033]");
         }
-        method oct_chr($/) {
-            my $val = $/<oct_val>.Str;
-            my $oct_val = :8($val).chr;
-            $/.make($oct_val);
+        method oct-chr($/) {
+            my $val = $/<oct-val>.Str;
+            my $oct-val = :8($val).chr;
+            $/.make($oct-val);
         }
         method nl($/) {
             $/.make("\n");
@@ -146,11 +146,11 @@ class Term::Cap {
             $/.make("\o[177]");
         }
         method ctrl($/) {
-            my $char = $/<ctrl_char>;
-            my $ctrl_char = pack('C',ord($char) +& 31).decode ;
-            $/.make($ctrl_char);
+            my $char = $/<ctrl-char>;
+            my $ctrl-char = pack('C',ord($char) +& 31).decode ;
+            $/.make($ctrl-char);
         }
-        method esc_char($/) {
+        method esc-char($/) {
             $/.make($/<char>);
         }
         method literal($/) {
@@ -160,20 +160,20 @@ class Term::Cap {
             my $val = $/<value>.made;
             $/.make($val);
         }
-        method str_val($/) {
+        method str-val($/) {
             my $val = $/<value>.list.map( { .made }).join('');
             $/.make($val);
         }
-        method true_bool($/) {
+        method true-bool($/) {
             $/.make: $<name>.made => True;
         }
-        method false_bool($/) {
+        method false-bool($/) {
             $/.make: $<name>.made => False;
         }
-        method num_cap($/) {
+        method num-cap($/) {
             $/.make: $<name>.made => $<value>.made;
         }
-        method str_cap($/) {
+        method str-cap($/) {
             $/.make: $<name>.made => $<value>.made;
         }
         method TOP($/) {
