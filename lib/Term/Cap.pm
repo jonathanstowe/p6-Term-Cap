@@ -97,9 +97,9 @@ class Term::Cap {
 
 
     grammar Parser {
-        rule comment          { ^^\# }
+        rule comment          { ^^\#.*?$$ }
         rule blank            { ^^\s*$$ }
-        rule comment-or-blank { <comment>|<blank> }
+        rule comment-or-blank { <comment>||<blank> }
         rule continuation     { \\\s*$$ }
         rule empty-cap        { \s*\\\s* }
         token cap             { \w\w }
@@ -137,7 +137,7 @@ class Term::Cap {
         token num-cap         { <name=cap>\#<value=num-val> }
         token str-cap         { <name=cap>\=<value=str-val> }
         token tc-cap          { tc\=<term=str-val> }
-        token capability      { ^<capability=true-bool>|<capability=false-bool>|<capability=num-cap>|<capability=str-cap>|<tc-cap>$ }
+        token capability      { <capability=true-bool>||<capability=false-bool>||<capability=num-cap>||<capability=str-cap>||<tc-cap> }
         token name            { <-[\|\:]>+ }
         token names           { <name>+ % '|' }
         regex record          { ^^ <names> ':' [ <capability> | <continuation> | <empty-cap> ]+ %% ':' }
