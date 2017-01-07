@@ -36,7 +36,6 @@ termcap manpage on most Unix-like systems.
 =end pod
 
 class Term::Cap {
-
     use Grammar::Tracer;
 
     class X::NoTerminal is Exception {
@@ -97,12 +96,15 @@ class Term::Cap {
 
 
     grammar Parser {
-        rule comment          { ^^\#.*?$$ }
-        rule blank            { ^^\s*$$ }
-        rule comment-or-blank { <comment>||<blank> }
+        rule comment          { ^^\#+.*?$$ }
+        rule empty-line       { ^^$$ }
+        rule blank            { ^^\h+$$ }
+        rule comment-or-blank { <comment>|<blank>|<empty-line> }
         rule continuation     { \\\s*$$ }
         rule empty-cap        { \s*\\\s* }
-        token cap             { \w\w }
+        token cap-char        { [<graph> & <-[\s:=#]>] }
+        token two-hashes      { '##' }
+        token cap             { <?after ':'><graph><graph> }
         token num-val         { \d+ }
         token esc             { \\E }
         token od              { <[0 .. 7]> }
@@ -130,21 +132,33 @@ class Term::Cap {
                                 <value=del>      ||
                                 <value=esc-char>
                               }
-        token literal         { . }
-        token str-val         { [ <value=special> || <value=literal> ]+ }
-        token true-bool       { <name=cap> }
-        token false-bool      { <name=cap>\@ }
-        token num-cap         { <name=cap>\#<value=num-val> }
-        token str-cap         { <name=cap>\=<value=str-val> }
-        token tc-cap          { tc\=<term=str-val> }
-        token capability      { <capability=true-bool>||<capability=false-bool>||<capability=num-cap>||<capability=str-cap>||<tc-cap> }
-        token name            { <-[\|\:]>+ }
-        token names           { <name>+ % '|' }
-        regex record          { ^^ <names> ':' [ <capability> | <continuation> | <empty-cap> ]+ %% ':' }
-        token TOP             { [ <comment-or-blank> || <record> ] + }
+        token literal         { <-[:]>+ }
+        token str-val         { [ <value=special> || <value=literal> ]+  }
+        rule true-bool       { <name=cap> }
+        rule false-bool      { <name=cap>\@ }
+        rule num-cap         { <name=cap>\#<value=num-val> }
+        rule str-cap         { <name=cap>\=<value=str-val>? }
+        rule tc-cap          { tc\=<term=str-val> }
+        rule capability      { <capability=num-cap>|<capability=str-cap>|<capability=false-bool>|<capability=true-bool> }
+        token name            { <-[|:]>+ }
+        rule names           { <name>+ % '|' }
+        rule record          { ^^ <names> ':' [ <capability> | <continuation> | <empty-cap> ]* %% ':' }
+        rule TOP             { [ <comment-or-blank> || <record> ] + }
     }
 
     class Actions  {
+        method FALLBACK($name, $/) {
+            #say "$name >", ~$/;
+        }
+        method comment($/) {
+            #say "> ", ~$/;
+        }
+        method name($/) {
+            #say ~$/;
+        }
+        method blank($/) {
+            #say "blank";
+        }
         method cap($/) {
             $/.make: ~$/;
         }
@@ -178,6 +192,7 @@ class Term::Cap {
             $/.make("\o[177]");
         }
         method ctrl($/) {
+            use experimental :pack;
             my $char = $/<ctrl-char>;
             my $ctrl-char = pack('C',ord($char) +& 31).decode ;
             $/.make($ctrl-char);
@@ -208,6 +223,9 @@ class Term::Cap {
         method str-cap($/) {
             $/.make: $<name>.made => $<value>.made;
         }
+        method record($/) {
+            #say $/;
+        }
         method TOP($/) {
             $/.make: $<capability>.made;
         }
@@ -215,7 +233,7 @@ class Term::Cap {
     }
 
     method description() {
-        Parser.parse(self.termcap);
+        Parser.parse(self.termcap, actions => Actions.new);
     }
 
 }
