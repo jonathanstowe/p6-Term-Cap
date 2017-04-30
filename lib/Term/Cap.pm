@@ -36,7 +36,6 @@ termcap manpage on most Unix-like systems.
 =end pod
 
 class Term::Cap {
-    use Grammar::Tracer;
 
     class X::NoTerminal is Exception {
         method message() { "no terminal type provided "; }
@@ -88,7 +87,7 @@ class Term::Cap {
     }
 
     method termcap-files() {
-        my @files = ($*HOME.child('.termcap'), |self.termpath.map({ $_.IO.child('termcap') }), %?RESOURCES<etc/termcap> ).grep({ $_.f});
+        my @files = ($*HOME.child('.termcap'), |self.termpath.map({ $_.IO.child('termcap') }), %?RESOURCES<etc/termcap>.IO ).grep({ $_.f});
         @files;
     }
 
