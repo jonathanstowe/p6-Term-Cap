@@ -14,11 +14,7 @@ You may be better off using a higher level abstraction such as curses.
 ## Installation
 
 Assuming you have a working Rakudo Perl 6 installation you should be able to
-install this with *panda* :
-
-    panda install Term::Cap
-
-or *zef*:
+install this with *zef* :
 
     zef install Term::Cap
 
